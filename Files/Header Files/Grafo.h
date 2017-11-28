@@ -27,7 +27,7 @@ class Grafo{
 				impar_counter++;
 			}
 		}
-		if (impar_counter == 2 || impar_counter == 0 || componentes() == 1) {
+		if ((impar_counter == 2 || impar_counter == 0) && componentes() == 1) {
 			return true;
 		}
 		return false;

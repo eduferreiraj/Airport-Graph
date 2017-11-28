@@ -65,15 +65,9 @@ public:
 			vector<tuple<int, int, float>> coords;
 			for (int i = 0; i < g->size; i++) {
 				for (vector<NoRef>::iterator it = g->adj->vertices[i].adjacentes.begin(); it != g->adj->vertices[i].adjacentes.end(); it++) {
-					//file << i + 1 << " " << it->node->cod + 1 << " " << it->peso << "\n\n";
 					coords.push_back(make_tuple(i,it->node->cod,it->peso));
 				}
 			}
-			/* DEBUG TUPLA ANTES DO REMOVE
-			for (auto it = coords.begin(); it != coords.end(); ++it) {
-				cout << "TUPLA ANTES DO REMOVE" << endl;
-				cout << get<0>(*it) << " " << get<1>(*it) << " " << get<2>(*it) << endl;
-			}*/
 
 			int coord1 = 0, coord2 = 0, coord3 = 0, coord4 = 0;
 			float peso1 = 0, peso2 = 0;
@@ -86,10 +80,10 @@ public:
 					}
 				}
 			}
-
+			int i = 0;
 			for (auto it = coords.begin(); it != coords.end(); ++it) {
-				//cout << "TUPLA DEPOIS DO REMOVE" << endl;
-				//cout << get<0>(*it) << " " << get<1>(*it) << " " << get<2>(*it) << endl;
+				i++;
+				Loading::showBar("Escrevendo arquivo Pajek.", "linhas", i, coords.size());
 				//INSERIR + 1 POR CONTA DO FORMATO PAJEK QUE INICIA EM 1
 				file << get<0>(*it)+1 << " " << get<1>(*it) + 1 << " " << get<2>(*it) << "\n\n";
 			}
@@ -105,11 +99,9 @@ public:
 		string L3 = "*Arcs";
 		vector<string> vertices_temp;
 		int tempsize;
-		//Grafo * g = new Grafo(tempsize); //altera 
-		cout << "Digite somente o nome do arquivo PAJEK: " << endl;
+		cout << "Digite somente o nome do arquivo Pajek: " << endl;
 		cin >> filename;
 		filename.append(".paj");
-		cout << filename << endl;
 		ifstream file;
 
 		file.open(filename, ifstream::in);
@@ -119,47 +111,33 @@ public:
 		}
 
 		getline(file, linha);
-		cout << "linha 1:" << linha << endl;
-		//_getch();
 		size_t found = linha.find(L1);
-		cout << found << endl;
 		if (found == std::string::npos) {
-			cout << "Erro de leitura PAJEK, Falha no carregamento!" << endl;
+			cout << "Erro de leitura Pajek, Falha no carregamento!" << endl;
 			exit(-1);
 		}
 		else {
 			linha.replace(linha.find(L1), L1.length(), "");
 			tempsize = stoi(linha);
-			cout << "linha tempsize:" << tempsize << endl;
-			cout << "linha linha:" << linha << endl;
-			//_getch();
 		}
 
 		for (int i = 0; i < tempsize; i++) {
 			getline(file, linha);
 			getline(file, linha);
-			cout << "linha for:" << linha << endl;
-			//_getch();
 			found = linha.find("\"");
 			linha.erase(0, static_cast<int>(found));
-			//ADICIONA ROTULOS -> linha = rotulos
-			//g->adj->seta_informacao(i, linha);
-			cout << "linha erased:" << linha << endl;
 			linha.erase(0, 1);
 			linha.erase(linha.size() - 1);
-			cout << "linha erased2:" << linha << endl;
 			vertices_temp.push_back(linha);
 		}
 
 		getline(file, linha);
 		getline(file, linha);
-		cout << "linha Edges or Arcs:" << linha << endl;
-		//_getch();
+		int i = 0;
 		found = linha.find(L2);
 		if (found == std::string::npos) {
 			found = linha.find(L3);
 			if (found == std::string::npos) {
-				cout << "Erro de leitura PAJEK, Falha no carregamento!" << endl;
 				exit(-1);
 			}
 			else {
@@ -169,6 +147,10 @@ public:
 					g1->adj->seta_informacao(i, vertices_temp[i]);
 				}
 				do {
+					Loading::printCentered("Processando arquivo. ");
+					Loading::printCentered(to_string(i) + " linhas descobertas e processadas.");
+					system("cls");
+					i++;
 					getline(file, linha);
 					if (linha == "") { continue; }
 					//SPACE SPLIT
@@ -199,6 +181,10 @@ public:
 				g2->adj->seta_informacao(i, vertices_temp[i]);
 			}
 			do {
+				system("cls");
+				Loading::printCentered("Processando arquivo. ");
+				Loading::printCentered(to_string(i) + " linhas descobertas e processadas.");
+				i++;
 				getline(file, linha);
 				//getline(file, linha);
 				//SPACE SPLIT
@@ -224,19 +210,6 @@ public:
 		}
 
 	}
-	//VERIFICA DIRECIONAL
-	/*
-	bool direcional(Grafo * g) {
-		for (int i = 0; i < g->size; i++) {
-			for (vector<NoRef>::iterator it = g->adj->vertices[i].adjacentes.begin(); it != g->adj->vertices[i].adjacentes.end(); it++) {
-				for (vector<NoRef>::iterator jt = g->adj->vertices[it->node->cod].adjacentes.begin(); jt != g->adj->vertices[it->node->cod].adjacentes.end(); jt++) {
-					if (it->peso != jt->peso) { return true; }
-				}
-			}
-		}
-		return false;
-	}*/
-
 	~Pajek() {
 
 	};
