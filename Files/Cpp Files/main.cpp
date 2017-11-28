@@ -20,17 +20,18 @@ int showMA(Grafo * g) {
 	cout << "2 - Remover adjacencia." << endl;
 	cout << "3 - Atualizar rotulo." << endl;
 	cout << "4 - Quantidade de adjacentes." << endl;
-	cout << "5 - Grafo conexo." << endl;
-	cout << "6 - Grafo ciclico." << endl;
-	cout << "7 - Dijkstra." << endl;
-	cout << "8 - Gerar novo Grafo." << endl;
-	cout << "9 - Gerar novo Grafo completo." << endl;
-	cout << "10 - Salvar Pajek." << endl;
-	cout << "11 - Carregar Pajek." << endl;
-	cout << "12 - Centralidade por Proximidade." << endl;
-	cout << "13 - Centralidade por Intermediacao." << endl;
-	cout << "14 - Carregar BD." << endl;
-	cout << "15 - Sair." << endl;
+	cout << "5 - Dijkstra." << endl;
+	cout << "6 - Grafo conexo." << endl;
+	cout << "7 - Grafo ciclico." << endl;
+	cout << "8 - Grafo euleriano." << endl;
+	cout << "9 - Gerar novo Grafo." << endl;
+	cout << "10 - Gerar novo Grafo completo." << endl;
+	cout << "11 - Salvar Pajek." << endl;
+	cout << "12 - Carregar Pajek." << endl;
+	cout << "13 - Centralidade por Proximidade." << endl;
+	cout << "14 - Centralidade por Intermediacao." << endl;
+	cout << "15 - Base Gnutella." << endl;
+	cout << "16 - Sair." << endl;
 	cout << "\n\nOperacao desejada: ";
 	int option;
 	cin >> option;
@@ -61,6 +62,7 @@ int main() {
 	cin >> size;
 	Grafo * g = new Grafo(size, true);
 	int option;
+	int i, j;
 	while (true) {
 		system("cls");
 		option = showMA(g);
@@ -68,11 +70,12 @@ int main() {
 		if (option == 0) {
 			cout << "Tamanho do novo grafo: ";
 			cin >> size;
+			cout << "Direcional: ";
+			cin >> i;
 			delete g;
-			g = new Grafo(size, true);
+			g = new Grafo(size, !i);
 		}
-		else if(option == 1){
-			int i, j;
+		else if (option == 1) {
 			float p;
 			cout << "Origem da adjacencia: ";
 			cin >> i;
@@ -85,7 +88,8 @@ int main() {
 			cout << "Peso: ";
 			cin >> p;
 			g->adj->cria_adjacencia(i, j, p);
-		}else if(option == 2) {
+		}
+		else if (option == 2) {
 			int i, j;
 			cout << "Origem da adjacencia: ";
 			cin >> i;
@@ -122,16 +126,30 @@ int main() {
 			_getch();
 		}
 		else if (option == 5) {
+			int i, j;
+			cout << "Origem: ";
+			cin >> i;
+			cout << "Destino: ";
+			cin >> j;
+			cout << "Melhor caminho: ";
+			vector<int> geodesico = g->dijkstra(i, j);
+			printarVetor(geodesico);
+			cout << endl << "Distancia Total: " << g->distance(geodesico) << endl;
+			cout << endl;
+			_getch();
+		}
+		else if (option == 6) {
 			cout << "Grafo conexo? ";
 			int c = g->componentes();
 			if (c == 1) {
 				cout << "Sim" << endl;
-			}else {
+			}
+			else {
 				cout << "Nao, " << c << " componentes." << endl;
 			}
 			_getch();
 		}
-		else if (option == 6) {
+		else if (option == 7) {
 			cout << "Grafo ciclico? ";
 			if (g->ciclo()) {
 				cout << "Sim" << endl;
@@ -141,20 +159,17 @@ int main() {
 			}
 			_getch();
 		}
-		else if (option == 7) {
-			int i, j;
-			cout << "Origem: ";
-			cin >> i;
-			cout << "Destino: ";
-			cin >> j;
-			cout << "Melhor caminho: ";
-			vector<int> geodesico = g->dijkstra(i, j);
-			printarVetor(geodesico);
-			cout << endl << "Distancia Total: " << g->distance(geodesico) << endl; 
-			cout << endl;
+		else if (option == 8) {
+			cout << "Grafo euleriano? ";
+			if (g->euleriano()) {
+				cout << "Sim" << endl;
+			}
+			else {
+				cout << "Nao" << endl;
+			}
 			_getch();
 		}
-		else if (option == 8) {
+		else if (option == 9) {
 			int v, a;
 			bool conexo;
 			cout << "Vertices: ";
@@ -164,11 +179,11 @@ int main() {
 			cout << "Conexo? ";
 			cin >> conexo;
 			delete g;
- 			g = GeradorDeGrafos::gerar(v, a, conexo);
+			g = GeradorDeGrafos::gerar(v, a, conexo);
 			_getch();
-			
+
 		}
-		else if (option == 9) {
+		else if (option == 10) {
 			int v, a;
 			bool conexo;
 			cout << "Vertices: ";
@@ -178,20 +193,20 @@ int main() {
 			_getch();
 
 		}
-		else if (option == 10) {
+		else if (option == 11) {
 			cout << "Salvando Pajek..." << endl;
 			Pajek::gravacao(g);
-			cout << "Pajek salvo, pressione qualquer tecla para continuar." << endl;
-			_getch();
-		}
-		else if (option == 11) {
-			cout << "Pajek sendo carregado..." << endl;
-			delete g;
-			g = Pajek::carregamento();
-			cout << "Pajek carregado, pressione qualquer tecla para continuar." << endl;
+			Loading::printCentered("Pajek salvo, pressione qualquer tecla para continuar.");
 			_getch();
 		}
 		else if (option == 12) {
+			cout << "Pajek sendo carregado..." << endl;
+			delete g;
+			g = Pajek::carregamento();
+			Loading::printCentered("Pajek carregado, pressione qualquer tecla para continuar.");
+			_getch();
+		}
+		else if (option == 13) {
 			int vertice;
 			cout << "Centralidade por Proximidade (Closeness)" << endl << endl;
 			cout << "Vertice (-1 para calcular todas): " << endl;
@@ -207,13 +222,13 @@ int main() {
 					cout << "Vertice: " << i << " Coef: " << coefs[i] << endl;
 				}
 				_getch();
-				
+
 			}
 			else {
 				cout << "Coeficiente: " << g->closeness(vertice) << endl;
 			}
 		}
-		else if (option == 13) {
+		else if (option == 14) {
 			vector<double> intermediacao = g->intermediacao();
 			_getch();
 			for (int i = 0; i < intermediacao.size(); i++) {
@@ -221,14 +236,14 @@ int main() {
 			}
 			_getch();
 		}
-		else if (option == 14) {
+		else if (option == 15) {
 			cout << "Importando Base de Dados..." << endl;
 			delete g;
 			g = Pajek::importa_bd();
 			cout << "Base carregada, pressione qualquer tecla para continuar." << endl;
 			_getch();
 		}
-		else if (option == 15) {
+		else if (option == 16) {
 			delete g;
 			return 0;
 		}
@@ -245,10 +260,4 @@ int main() {
 }
 
 
-/*
-void cria_adjacencia(G, i, j, P)  // cria uma adjac�ncia entre i e j com custo P no grafo G;
-void remove_adjacencia(G, i, j)  // remove a adjac�ncia entre i e j no grafo G;
-void imprime_adjacencias(G)  // imprime a matriz de adjac�ncias do grafo G
-void seta_informacao(G, i, String V)  // atualiza a informa��o do n� i com o valor V (que deve ser uma string) no grafo G
-int adjacentes(G, i, adj)  // retorna o n�mero de adjacentes ao v�rtice i no grafo G e os armazena no vetor adj
-*/
+

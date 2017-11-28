@@ -72,7 +72,7 @@ public:
 	//MODULO DE GRAVACAO PAJEK
 	static void gravacao(Grafo * g) {
 		string filename;
-		cout << "Digite somente o nome do arquivo PAJEK: " << endl;
+		cout << "Digite somente o nome do arquivo Pajek: " << endl;
 		cin >> filename;
 		filename.append(".paj");
 		ofstream file;
@@ -142,10 +142,9 @@ public:
 		vector<string> vertices_temp;
 		int tempsize;
 		//Grafo * g = new Grafo(tempsize); //altera 
-		cout << "Digite somente o nome do arquivo PAJEK: " << endl;
+		cout << "Digite somente o nome do arquivo Pajek: " << endl;
 		cin >> filename;
 		filename.append(".paj");
-		cout << filename << endl;
 		ifstream file;
 
 		file.open(filename, ifstream::in);
@@ -155,10 +154,8 @@ public:
 		}
 
 		getline(file, linha);
-		cout << "linha 1:" << linha << endl;
 		//_getch();
 		size_t found = linha.find(L1);
-		cout << found << endl;
 		if (found == std::string::npos) {
 			cout << "Erro de leitura PAJEK, Falha no carregamento!" << endl;
 			exit(-1);
@@ -166,30 +163,24 @@ public:
 		else {
 			linha.replace(linha.find(L1), L1.length(), "");
 			tempsize = stoi(linha);
-			cout << "linha tempsize:" << tempsize << endl;
-			cout << "linha linha:" << linha << endl;
 			//_getch();
 		}
 
 		for (int i = 0; i < tempsize; i++) {
 			getline(file, linha);
 			getline(file, linha);
-			cout << "linha for:" << linha << endl;
 			//_getch();
 			found = linha.find("\"");
 			linha.erase(0, static_cast<int>(found));
 			//ADICIONA ROTULOS -> linha = rotulos
 			//g->adj->seta_informacao(i, linha);
-			cout << "linha erased:" << linha << endl;
 			linha.erase(0, 1);
 			linha.erase(linha.size() - 1);
-			cout << "linha erased2:" << linha << endl;
 			vertices_temp.push_back(linha);
 		}
 
 		getline(file, linha);
 		getline(file, linha);
-		cout << "linha Edges or Arcs:" << linha << endl;
 		//_getch();
 		found = linha.find(L2);
 		if (found == std::string::npos) {
@@ -260,18 +251,7 @@ public:
 		}
 
 	}
-	//VERIFICA DIRECIONAL
-	/*
-	bool direcional(Grafo * g) {
-	for (int i = 0; i < g->size; i++) {
-	for (vector<NoRef>::iterator it = g->adj->vertices[i].adjacentes.begin(); it != g->adj->vertices[i].adjacentes.end(); it++) {
-	for (vector<NoRef>::iterator jt = g->adj->vertices[it->node->cod].adjacentes.begin(); jt != g->adj->vertices[it->node->cod].adjacentes.end(); jt++) {
-	if (it->peso != jt->peso) { return true; }
-	}
-	}
-	}
-	return false;
-	}*/
+	
 
 	~Pajek() {
 
