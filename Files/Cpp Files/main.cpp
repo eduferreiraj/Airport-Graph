@@ -29,7 +29,8 @@ int showMA(Grafo * g) {
 	cout << "11 - Carregar Pajek." << endl;
 	cout << "12 - Centralidade por Proximidade." << endl;
 	cout << "13 - Centralidade por Intermediacao." << endl;
-	cout << "14 - Sair." << endl;
+	cout << "14 - Carregar BD." << endl;
+	cout << "15 - Sair." << endl;
 	cout << "\n\nOperacao desejada: ";
 	int option;
 	cin >> option;
@@ -221,6 +222,13 @@ int main() {
 			_getch();
 		}
 		else if (option == 14) {
+			cout << "Importando Base de Dados..." << endl;
+			delete g;
+			g = Pajek::importa_bd();
+			cout << "Base carregada, pressione qualquer tecla para continuar." << endl;
+			_getch();
+		}
+		else if (option == 15) {
 			delete g;
 			return 0;
 		}

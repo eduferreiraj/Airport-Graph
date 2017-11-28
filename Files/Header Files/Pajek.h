@@ -29,8 +29,44 @@ public:
 	}
 
 	//MODULO DE IMPORTACAO DE BASE DE DADOS
-	static void importa_pajek(Grafo * g) {
-
+	static Grafo * importa_bd() {
+		string filename, linha;
+		filename = "p2p-Gnutella08.txt";
+		ifstream file;
+		file.open(filename, ifstream::in);
+		if (file.is_open() == false) {
+			cout << "Erro ao abrir o arquivo: " << filename << endl;
+			exit(0);
+		}
+		//comentarios
+		getline(file, linha);
+		getline(file, linha);
+		getline(file, linha);
+		getline(file, linha);
+		//grafo:
+		Grafo * g = new Grafo(6301,false);
+		vector<string> tokens_split;
+		vector<int> tokens;
+		//add arestas
+		do {
+			getline(file, linha);
+			if (linha == "") { continue; }
+			tokens_split = split(linha, '\t');
+			if (tokens_split.size() != 2) {
+				tokens_split.clear();
+				tokens_split = split(linha, ' ');
+			}
+			tokens.resize(tokens_split.size());
+			for (int i = 0; i < tokens_split.size(); i++) {
+				tokens[i] = stoi(tokens_split[i]);
+			}
+			float peso = 1;
+			g->adj->cria_adjacencia(tokens[0], tokens[1], peso);
+		} while (!file.eof());
+		tokens_split.clear();
+		tokens.clear();
+		file.close();
+		return g;
 	}
 
 	//MODULO DE GRAVACAO PAJEK
