@@ -30,7 +30,7 @@ public:
 
 	//MODULO DE IMPORTACAO DE BASE DE DADOS
 	static void importa_pajek(Grafo * g) {
-
+		return;
 	}
 
 	//MODULO DE GRAVACAO PAJEK
