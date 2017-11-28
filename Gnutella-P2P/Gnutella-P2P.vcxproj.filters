@@ -21,9 +21,6 @@
     <ClInclude Include="..\Files\Header Files\Loading.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Files\Header Files\MatrizAdjacencia.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\Files\Header Files\Pajek.h">
       <Filter>Header Files</Filter>
     </ClInclude>

@@ -235,12 +235,3 @@ int main() {
 	return 0;
 
 }
-
-
-/*
-void cria_adjacencia(G, i, j, P)  // cria uma adjac�ncia entre i e j com custo P no grafo G;
-void remove_adjacencia(G, i, j)  // remove a adjac�ncia entre i e j no grafo G;
-void imprime_adjacencias(G)  // imprime a matriz de adjac�ncias do grafo G
-void seta_informacao(G, i, String V)  // atualiza a informa��o do n� i com o valor V (que deve ser uma string) no grafo G
-int adjacentes(G, i, adj)  // retorna o n�mero de adjacentes ao v�rtice i no grafo G e os armazena no vetor adj
-*/

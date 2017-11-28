@@ -4,11 +4,14 @@
 #include <sstream>
 #include <iterator>
 #include <algorithm>
+#include <tuple>
 
 class Pajek
 {
 public:
-	Pajek();
+	Pajek() {
+		
+	};
 
 	//SPACE SPLIT TEMPLATE
 	template<typename Out>
@@ -24,16 +27,12 @@ public:
 		split(s, delim, back_inserter(elems));
 		return elems;
 	}
-	/*
-	//CRIA EDGES -> NAO DIRECIONADO
-	static void edges(Grafo * g,int i,int j,float p) {
-		g->adj->cria_adjacencia(i, j, p);
-		g->adj->cria_adjacencia(j, i, p);
+
+	//MODULO DE IMPORTACAO DE BASE DE DADOS
+	static void importa_pajek(Grafo * g) {
+
 	}
-	//CRIA ARCS -> DIRECIONADO
-	static void arcs(Grafo * g,int i, int j, float p) {
-		g->adj->cria_adjacencia(i, j, p);
-	}*/
+
 	//MODULO DE GRAVACAO PAJEK
 	static void gravacao(Grafo * g) {
 		string filename;
@@ -53,17 +52,49 @@ public:
 		for (int i = 0; i < g->size; i++) {
 			file << (i + 1) << " \"" << g->adj->vertices[i].nome << "\"\n\n";
 		}
-		if (g->adj->direcional()) {
+		if (!g->adj->direcional()) {
 			file << "*Arcs" << "\n\n";
+			for (int i = 0; i < g->size; i++) {
+				for (vector<NoRef>::iterator it = g->adj->vertices[i].adjacentes.begin(); it != g->adj->vertices[i].adjacentes.end(); it++) {
+					file << i + 1 << " " << it->node->cod + 1 << " " << it->peso << "\n\n";
+				}
+			}
 		}
 		else {
 			file << "*Edges" << "\n\n";
-		}
-		for (int i = 0; i < g->size; i++) {
-			for (vector<NoRef>::iterator it = g->adj->vertices[i].adjacentes.begin(); it != g->adj->vertices[i].adjacentes.end(); it++) {
-				file << i + 1 << " " << it->node->cod+1 << " " << it->peso << "\n\n";
+			vector<tuple<int, int, float>> coords;
+			for (int i = 0; i < g->size; i++) {
+				for (vector<NoRef>::iterator it = g->adj->vertices[i].adjacentes.begin(); it != g->adj->vertices[i].adjacentes.end(); it++) {
+					//file << i + 1 << " " << it->node->cod + 1 << " " << it->peso << "\n\n";
+					coords.push_back(make_tuple(i,it->node->cod,it->peso));
+				}
+			}
+			/* DEBUG TUPLA ANTES DO REMOVE
+			for (auto it = coords.begin(); it != coords.end(); ++it) {
+				cout << "TUPLA ANTES DO REMOVE" << endl;
+				cout << get<0>(*it) << " " << get<1>(*it) << " " << get<2>(*it) << endl;
+			}*/
+
+			int coord1 = 0, coord2 = 0, coord3 = 0, coord4 = 0;
+			float peso1 = 0, peso2 = 0;
+			for (int it = 0; it < coords.size(); ++it) {
+				for (int jt = 0; jt < coords.size(); ++jt) {
+					tie(coord1, coord2, peso1) = coords[it];
+					tie(coord3, coord4, peso2) = coords[jt];
+					if (coord1 == coord4 && coord2 == coord3) {
+						coords.erase(coords.begin()+jt);
+					}
+				}
+			}
+
+			for (auto it = coords.begin(); it != coords.end(); ++it) {
+				//cout << "TUPLA DEPOIS DO REMOVE" << endl;
+				//cout << get<0>(*it) << " " << get<1>(*it) << " " << get<2>(*it) << endl;
+				//INSERIR + 1 POR CONTA DO FORMATO PAJEK QUE INICIA EM 1
+				file << get<0>(*it)+1 << " " << get<1>(*it) + 1 << " " << get<2>(*it) << "\n\n";
 			}
 		}
+
 		file.close();
 	}
 	//MODULO DE CARREGAMENTO PAJEK
@@ -206,6 +237,8 @@ public:
 		return false;
 	}*/
 
-	~Pajek();
+	~Pajek() {
+
+	};
 };
 
