@@ -10,7 +10,7 @@ class Pajek
 {
 public:
 	Pajek() {
-		
+
 	};
 
 	//SPACE SPLIT TEMPLATE
@@ -29,8 +29,44 @@ public:
 	}
 
 	//MODULO DE IMPORTACAO DE BASE DE DADOS
-	static void importa_pajek(Grafo * g) {
-		return;
+	static Grafo * importa_bd() {
+		string filename, linha;
+		filename = "p2p-Gnutella08.txt";
+		ifstream file;
+		file.open(filename, ifstream::in);
+		if (file.is_open() == false) {
+			cout << "Erro ao abrir o arquivo: " << filename << endl;
+			exit(0);
+		}
+		//comentarios
+		getline(file, linha);
+		getline(file, linha);
+		getline(file, linha);
+		getline(file, linha);
+		//grafo:
+		Grafo * g = new Grafo(6301,false);
+		vector<string> tokens_split;
+		vector<int> tokens;
+		//add arestas
+		do {
+			getline(file, linha);
+			if (linha == "") { continue; }
+			tokens_split = split(linha, '\t');
+			if (tokens_split.size() != 2) {
+				tokens_split.clear();
+				tokens_split = split(linha, ' ');
+			}
+			tokens.resize(tokens_split.size());
+			for (int i = 0; i < tokens_split.size(); i++) {
+				tokens[i] = stoi(tokens_split[i]);
+			}
+			float peso = 1;
+			g->adj->cria_adjacencia(tokens[0], tokens[1], peso);
+		} while (!file.eof());
+		tokens_split.clear();
+		tokens.clear();
+		file.close();
+		return g;
 	}
 
 	//MODULO DE GRAVACAO PAJEK
@@ -41,7 +77,7 @@ public:
 		filename.append(".paj");
 		ofstream file;
 
-		file.open(filename,ofstream::out);
+		file.open(filename, ofstream::out);
 		if (file.is_open() == false) {
 			cout << "Erro ao abrir o arquivo: " << filename << endl;
 			exit(0);
@@ -65,9 +101,15 @@ public:
 			vector<tuple<int, int, float>> coords;
 			for (int i = 0; i < g->size; i++) {
 				for (vector<NoRef>::iterator it = g->adj->vertices[i].adjacentes.begin(); it != g->adj->vertices[i].adjacentes.end(); it++) {
-					coords.push_back(make_tuple(i,it->node->cod,it->peso));
+					//file << i + 1 << " " << it->node->cod + 1 << " " << it->peso << "\n\n";
+					coords.push_back(make_tuple(i, it->node->cod, it->peso));
 				}
 			}
+			/* DEBUG TUPLA ANTES DO REMOVE
+			for (auto it = coords.begin(); it != coords.end(); ++it) {
+			cout << "TUPLA ANTES DO REMOVE" << endl;
+			cout << get<0>(*it) << " " << get<1>(*it) << " " << get<2>(*it) << endl;
+			}*/
 
 			int coord1 = 0, coord2 = 0, coord3 = 0, coord4 = 0;
 			float peso1 = 0, peso2 = 0;
@@ -76,16 +118,16 @@ public:
 					tie(coord1, coord2, peso1) = coords[it];
 					tie(coord3, coord4, peso2) = coords[jt];
 					if (coord1 == coord4 && coord2 == coord3) {
-						coords.erase(coords.begin()+jt);
+						coords.erase(coords.begin() + jt);
 					}
 				}
 			}
-			int i = 0;
+
 			for (auto it = coords.begin(); it != coords.end(); ++it) {
-				i++;
-				Loading::showBar("Escrevendo arquivo Pajek.", "linhas", i, coords.size());
+				//cout << "TUPLA DEPOIS DO REMOVE" << endl;
+				//cout << get<0>(*it) << " " << get<1>(*it) << " " << get<2>(*it) << endl;
 				//INSERIR + 1 POR CONTA DO FORMATO PAJEK QUE INICIA EM 1
-				file << get<0>(*it)+1 << " " << get<1>(*it) + 1 << " " << get<2>(*it) << "\n\n";
+				file << get<0>(*it) + 1 << " " << get<1>(*it) + 1 << " " << get<2>(*it) << "\n\n";
 			}
 		}
 
@@ -99,9 +141,11 @@ public:
 		string L3 = "*Arcs";
 		vector<string> vertices_temp;
 		int tempsize;
-		cout << "Digite somente o nome do arquivo Pajek: " << endl;
+		//Grafo * g = new Grafo(tempsize); //altera 
+		cout << "Digite somente o nome do arquivo PAJEK: " << endl;
 		cin >> filename;
 		filename.append(".paj");
+		cout << filename << endl;
 		ifstream file;
 
 		file.open(filename, ifstream::in);
@@ -111,46 +155,56 @@ public:
 		}
 
 		getline(file, linha);
+		cout << "linha 1:" << linha << endl;
+		//_getch();
 		size_t found = linha.find(L1);
+		cout << found << endl;
 		if (found == std::string::npos) {
-			cout << "Erro de leitura Pajek, Falha no carregamento!" << endl;
+			cout << "Erro de leitura PAJEK, Falha no carregamento!" << endl;
 			exit(-1);
 		}
 		else {
 			linha.replace(linha.find(L1), L1.length(), "");
 			tempsize = stoi(linha);
+			cout << "linha tempsize:" << tempsize << endl;
+			cout << "linha linha:" << linha << endl;
+			//_getch();
 		}
 
 		for (int i = 0; i < tempsize; i++) {
 			getline(file, linha);
 			getline(file, linha);
+			cout << "linha for:" << linha << endl;
+			//_getch();
 			found = linha.find("\"");
 			linha.erase(0, static_cast<int>(found));
+			//ADICIONA ROTULOS -> linha = rotulos
+			//g->adj->seta_informacao(i, linha);
+			cout << "linha erased:" << linha << endl;
 			linha.erase(0, 1);
 			linha.erase(linha.size() - 1);
+			cout << "linha erased2:" << linha << endl;
 			vertices_temp.push_back(linha);
 		}
 
 		getline(file, linha);
 		getline(file, linha);
-		int i = 0;
+		cout << "linha Edges or Arcs:" << linha << endl;
+		//_getch();
 		found = linha.find(L2);
 		if (found == std::string::npos) {
 			found = linha.find(L3);
 			if (found == std::string::npos) {
+				cout << "Erro de leitura PAJEK, Falha no carregamento!" << endl;
 				exit(-1);
 			}
 			else {
 				//CHAMA ARCS
-				Grafo * g1 = new Grafo(tempsize,false);
-				for (int i = 0; i < vertices_temp.size();i++) {
+				Grafo * g1 = new Grafo(tempsize, false);
+				for (int i = 0; i < vertices_temp.size(); i++) {
 					g1->adj->seta_informacao(i, vertices_temp[i]);
 				}
 				do {
-					Loading::printCentered("Processando arquivo. ");
-					Loading::printCentered(to_string(i) + " linhas descobertas e processadas.");
-					system("cls");
-					i++;
 					getline(file, linha);
 					if (linha == "") { continue; }
 					//SPACE SPLIT
@@ -158,8 +212,8 @@ public:
 					vector<int> tokens;
 					float token_peso = 0;
 					tokens_split = split(linha, ' ');
-					tokens.resize(tokens_split.size()-1);
-					for (int i = 0; i < tokens_split.size()-1; i++) {
+					tokens.resize(tokens_split.size() - 1);
+					for (int i = 0; i < tokens_split.size() - 1; i++) {
 						tokens[i] = stoi(tokens_split[i]);
 					}
 					token_peso = stof(tokens_split[2]);
@@ -181,10 +235,6 @@ public:
 				g2->adj->seta_informacao(i, vertices_temp[i]);
 			}
 			do {
-				system("cls");
-				Loading::printCentered("Processando arquivo. ");
-				Loading::printCentered(to_string(i) + " linhas descobertas e processadas.");
-				i++;
 				getline(file, linha);
 				//getline(file, linha);
 				//SPACE SPLIT
@@ -192,9 +242,9 @@ public:
 				vector<string> tokens_split;
 				vector<int> tokens;
 				float token_peso = 0;
-				tokens_split = split(linha,' ');
-				tokens.resize(tokens_split.size()-1);
-				for (int i = 0; i < tokens_split.size()-1; i++) {
+				tokens_split = split(linha, ' ');
+				tokens.resize(tokens_split.size() - 1);
+				for (int i = 0; i < tokens_split.size() - 1; i++) {
 					tokens[i] = stoi(tokens_split[i]);
 				}
 				token_peso = stof(tokens_split[2]);
@@ -210,6 +260,19 @@ public:
 		}
 
 	}
+	//VERIFICA DIRECIONAL
+	/*
+	bool direcional(Grafo * g) {
+	for (int i = 0; i < g->size; i++) {
+	for (vector<NoRef>::iterator it = g->adj->vertices[i].adjacentes.begin(); it != g->adj->vertices[i].adjacentes.end(); it++) {
+	for (vector<NoRef>::iterator jt = g->adj->vertices[it->node->cod].adjacentes.begin(); jt != g->adj->vertices[it->node->cod].adjacentes.end(); jt++) {
+	if (it->peso != jt->peso) { return true; }
+	}
+	}
+	}
+	return false;
+	}*/
+
 	~Pajek() {
 
 	};
